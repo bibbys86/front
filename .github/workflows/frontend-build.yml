@@ -22,11 +22,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker Image (linux/amd64)
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: bibbys86/headphone-frontend:latest
-          platforms: linux/amd64
+          platforms: linux/amd64   # ✅ 여기!
