@@ -1,16 +1,23 @@
-name: Build & Push Frontend
+name: Frontend Build and Deploy
 
 on:
-  workflow_dispatch:
   push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches: [ main ]
     paths:
       - 'frontend/**'
 
+env:
+  DOCKER_IMAGE: bibbys86/frontend
+
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -22,11 +29,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker Image (linux/amd64)
+      - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
-          file: ./frontend/Dockerfile
           push: true
-          tags: bibbys86/headphone-frontend:latest
-          platforms: linux/amd64   # ✅ 여기!
+          tags: ${{ env.DOCKER_IMAGE }}:latest
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max 
